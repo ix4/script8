@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import includes from 'lodash/includes'
 import classNames from 'classnames'
+import { Route } from 'react-router-dom'
 import Boot from './Boot.js'
 import Home from './Home.js'
 import Output from './Output.js'
@@ -18,31 +19,17 @@ import Shelf from './Shelf.js'
 import TopBar from '../components/TopBar.js'
 import ErrorBoundary from '../components/ErrorBoundary.js'
 import screenTypes from '../utils/screenTypes.js'
+import { getScreenType } from '../utils/location.js'
 import { version } from '../iframe/package.json'
 import '../css/App.css'
 
 console.log(JSON.stringify(`SCRIPT-8 app v ${version}`, null, 2))
 
-const mapStateToProps = ({ screen, tutorial }) => ({
-  screen,
+const mapStateToProps = ({ tutorial }) => ({
   tutorial
 })
 
 const mapDispatchToProps = () => ({})
-
-const options = {
-  [screenTypes.BOOT]: () => <Boot />,
-  [screenTypes.HOME]: () => <Home />,
-  [screenTypes.SPRITE]: () => <Sprite />,
-  [screenTypes.MAP]: () => <Map />,
-  [screenTypes.PHRASE]: () => <Phrase />,
-  [screenTypes.CHAIN]: () => <Chain />,
-  [screenTypes.SONG]: () => <Song />,
-  [screenTypes.RUN]: () => <Run />,
-  [screenTypes.CODE]: () => <Code />,
-  [screenTypes.HELP]: () => <Help />,
-  [screenTypes.SHELF]: () => <Shelf />
-}
 
 class App extends Component {
   constructor (props) {
@@ -54,7 +41,7 @@ class App extends Component {
     }
   }
 
-  componentDidUpdate (prevProps, prevState) {
+  componentDidUpdate () {
     // Get the tutorial's height and set App's padding-bottom to this.
     if (this.tutorialElement && this.tutorialElement.current) {
       const { clientHeight } = this.tutorialElement.current
@@ -65,7 +52,8 @@ class App extends Component {
   }
 
   render () {
-    const { screen, tutorial } = this.props
+    const { tutorial, location } = this.props
+    const screen = getScreenType(location)
     return (
       <ErrorBoundary>
         <div
@@ -78,7 +66,17 @@ class App extends Component {
           })}
         >
           <TopBar />
-          {options[screen]()}
+          <Route exact path='/' component={Home} />
+          <Route path='/code' component={Code} />
+          <Route path='/sprite' component={Sprite} />
+          <Route path='/map' component={Map} />
+          <Route path='/phrase' component={Phrase} />
+          <Route path='/chain' component={Chain} />
+          <Route path='/song' component={Song} />
+          <Route path='/run' component={Run} />
+          <Route path='/help' component={Help} />
+          <Route path='/shelf' component={Shelf} />
+
           <Output />
           {tutorial ? (
             <Tutorial
