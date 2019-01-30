@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
+import { Link } from 'react-router-dom'
 import actions from '../actions/actions.js'
 import screenTypes from '../utils/screenTypes.js'
 import logo from '../images/logo.png'
@@ -92,14 +93,11 @@ class Home extends Component {
             >
               > New? Start here
             </button>
-            <button
-              className={classNames('button', {
-                invisible: this.props.tutorial
-              })}
-              onClick={this.handleSeeLessons}
-            >
-              > See lessons
-            </button>
+            {this.props.tutorial ? null : (
+              <Link className='text highlight' to='/help'>
+                > See lessons
+              </Link>
+            )}
           </p>
           <p>
             SCRIPT-8 is designed to encourage play — the kind of wonder-filled

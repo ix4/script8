@@ -129,8 +129,26 @@ ul
 
 a
   text-decoration none
+
+  @extend .VT323
+  font-size $font-large
+
+  &.button
+    text-transform uppercase
+    color $palette-2
+    padding 0 0.75rem
+    &:hover
+      color $palette-0
+    &.active
+      color $palette-1
+      background $palette-6
+      cursor default
+
   &.text
     color $palette-0
+    &.highlight
+      text-transform uppercase
+      text-decoration underline
     &:hover
       background $palette-0
       color $palette-7
@@ -144,7 +162,7 @@ button.play
   &.active
     cursor pointer
 
-.button
+button.button
   border none
   color $palette-2
   cursor pointer

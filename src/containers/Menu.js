@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { NavLink, withRouter } from 'react-router-dom'
 import { connect } from 'react-redux'
 import classNames from 'classnames'
 import _ from 'lodash'
@@ -509,6 +510,12 @@ class Menu extends Component {
           </li>
 
           <li>
+            <NavLink className='button' to='/help'>
+              help
+            </NavLink>
+          </li>
+
+          {/* <li>
             <button
               onClick={() => {
                 setScreen(screenTypes.HELP)
@@ -525,7 +532,7 @@ class Menu extends Component {
                 {screen === screenTypes.HELP ? 'help' : 'he'}
               </span>
             </button>
-          </li>
+          </li> */}
 
           <li>
             <button
@@ -574,7 +581,7 @@ class Menu extends Component {
   }
 }
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps
-)(Menu)
+)(Menu))
