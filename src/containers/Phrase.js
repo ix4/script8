@@ -13,6 +13,8 @@ const synth = createSynth()
 Tone.Transport.bpm.value = settings.bpm
 Tone.Transport.start(settings.startOffset)
 
+// const fibonacciRate = rate => [1, 2, 3, 5, 8, 13, 21, 34][rate]
+
 const mapStateToProps = ({ phrases }) => ({ phrases })
 
 const mapDispatchToProps = dispatch => ({
@@ -26,10 +28,11 @@ const mapDispatchToProps = dispatch => ({
 })
 
 class Phrase extends Component {
-  constructor (props) {
+  constructor(props) {
     super(props)
 
     this.handlePhraseIndexChange = this.handlePhraseIndexChange.bind(this)
+    this.handleRateChange = this.handleRateChange.bind(this)
     this.handleNoteClick = this.handleNoteClick.bind(this)
     this.handleVolumeClick = this.handleVolumeClick.bind(this)
     this.getCurrentPhrase = this.getCurrentPhrase.bind(this)
@@ -39,17 +42,18 @@ class Phrase extends Component {
     this.state = {
       isPlaying: false,
       playingIndex: 0,
-      phraseIndex: 0
+      phraseIndex: 0,
+      playbackRate: 0
     }
   }
 
-  drawCallback (playingIndex) {
+  drawCallback(playingIndex) {
     this.setState({
       playingIndex
     })
   }
 
-  componentDidMount () {
+  componentDidMount() {
     Tone.context.resume()
 
     this.sequence = new Tone.Sequence(
@@ -66,15 +70,16 @@ class Phrase extends Component {
       _.range(settings.matrixLength),
       settings.subdivision
     )
+    // this.sequence.loop = false
   }
 
-  getCurrentPhrase () {
+  getCurrentPhrase() {
     const { phrases } = this.props
     const { phraseIndex } = this.state
     return _.get(phrases, phraseIndex, {})
   }
 
-  handlePlay () {
+  handlePlay() {
     const { isPlaying } = this.state
     if (isPlaying) {
       this.sequence.stop()
@@ -87,7 +92,16 @@ class Phrase extends Component {
     })
   }
 
-  handlePhraseIndexChange (e) {
+  handleRateChange(e) {
+    const { validity, value } = e.target
+    if (validity.valid) {
+      this.setState({
+        playbackRate: value
+      })
+    }
+  }
+
+  handlePhraseIndexChange(e) {
     const { validity, value } = e.target
     if (validity.valid) {
       this.setState({
@@ -96,7 +110,7 @@ class Phrase extends Component {
     }
   }
 
-  handleVolumeClick (col) {
+  handleVolumeClick(col) {
     const { updatePhrase } = this.props
     const { phraseIndex, isPlaying } = this.state
     const phrase = this.getCurrentPhrase()
@@ -140,7 +154,7 @@ class Phrase extends Component {
     updatePhrase({ phrase: newPhrase, index: phraseIndex })
   }
 
-  handleNoteClick ({ row, col }) {
+  handleNoteClick({ row, col }) {
     const { updatePhrase } = this.props
     const { phraseIndex, isPlaying } = this.state
     const phrase = this.getCurrentPhrase()
@@ -192,36 +206,44 @@ class Phrase extends Component {
     updatePhrase({ phrase: newPhrase, index: phraseIndex })
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.drawCallback = () => {}
     this.sequence.stop()
   }
 
-  render () {
-    const { phraseIndex, isPlaying, playingIndex } = this.state
+  render() {
+    const { phraseIndex, isPlaying, playingIndex, playbackRate } = this.state
     const phrase = this.getCurrentPhrase()
 
     return (
-      <div className='Phrase two-rows-and-grid'>
-        <div className='main'>
-          <div className='settings'>
-            <div className='title'>Phrase</div>
+      <div className="Phrase two-rows-and-grid">
+        <div className="main">
+          <div className="settings">
+            <div className="title">Phrase</div>
             <TextInput
-              label='#'
+              label="#"
               value={phraseIndex.toString()}
               handleChange={this.handlePhraseIndexChange}
-              type='number'
+              type="number"
               options={{ min: 0, max: settings.phrases - 1 }}
             />
+            <div className="title">RATE</div>
+            <TextInput
+              label="#"
+              value={playbackRate.toString()}
+              handleChange={this.handleRateChange}
+              type="number"
+              options={{ min: 0, max: 7 }}
+            />
           </div>
-          <div className='matrix'>
+          <div className="matrix">
             <button
               className={classNames('play button', { active: isPlaying })}
               onClick={this.handlePlay}
             >
               {isPlaying ? 'stop' : 'play'}
             </button>
-            <table className='notes'>
+            <table className="notes">
               <tbody>
                 {_.range(11, -1).map(row => (
                   <tr key={row}>
@@ -231,7 +253,7 @@ class Phrase extends Component {
                       const match = value && value.note === row
                       const highlighter =
                         row === 11 && col === playingIndex && isPlaying ? (
-                          <span className='highlight' />
+                          <span className="highlight" />
                         ) : null
                       return (
                         <td
@@ -252,7 +274,7 @@ class Phrase extends Component {
                 ))}
               </tbody>
             </table>
-            <table className='volumes'>
+            <table className="volumes">
               <tbody>
                 <tr>
                   <td>v</td>
@@ -260,7 +282,7 @@ class Phrase extends Component {
                     const value = phrase[col]
                     const highlighter =
                       col === playingIndex && isPlaying ? (
-                        <span className='highlight' />
+                        <span className="highlight" />
                       ) : null
                     return (
                       <td
@@ -286,4 +308,7 @@ class Phrase extends Component {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Phrase)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Phrase)

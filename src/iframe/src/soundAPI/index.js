@@ -4,14 +4,46 @@ import toLetter from '../toLetter.js'
 import normalize from '../normalize.js'
 import settings from '../settings.js'
 
-const createSynth = volumeNode => {
-  const synth = new Tone.Synth()
-  if (volumeNode) {
-    synth.chain(volumeNode, Tone.Master)
-  } else {
-    synth.chain(Tone.Master)
+const pulseOptions = {
+  oscillator: {
+    type: 'triangle'
+  },
+  envelope: {
+    release: 0.07
   }
-  return synth
+}
+
+// const triangleOptions = {
+//   oscillator: {
+//     type: 'triangle'
+//   },
+//   envelope: {
+//     release: 0.07
+//   }
+// }
+
+// const squareOptions = {
+//   oscillator: {
+//     type: 'square'
+//   },
+//   envelope: {
+//     release: 0.07
+//   }
+// }
+
+// var pulseSynth = new Tone.Synth(pulseOptions).toMaster()
+// var squareSynth = new Tone.Synth(squareOptions).toMaster()
+// var triangleSynth = new Tone.Synth(triangleOptions).toMaster()
+// var noiseSynth = new Tone.NoiseSynth().toMaster()
+
+const createSynth = volumeNode => {
+  const pulseSynth = new Tone.Synth(pulseOptions).toMaster()
+  if (volumeNode) {
+    pulseSynth.chain(volumeNode, Tone.Master)
+  } else {
+    pulseSynth.chain(Tone.Master)
+  }
+  return pulseSynth
 }
 
 const playNote = ({
@@ -29,6 +61,7 @@ const playNote = ({
   if (time >= Tone.context.currentTime) {
     const normalizedVolume = normalize.volume(volume)
     const letter = toLetter(note + octave * 12, true, true)
+    console.log({ normalizedVolume })
     synth.triggerAttackRelease(
       letter,
       settings.subdivision,
@@ -211,6 +244,7 @@ const soundAPI = volumeNode => {
         settings.subdivision
       )
       sequence.loop = false
+      // sequence.playbackRate = 34
       sequence.start()
       phrasePool.push(sequence)
       // const after = Date.now()
