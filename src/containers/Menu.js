@@ -262,9 +262,7 @@ class Menu extends Component {
       clearToken()
     } else {
       window.open(
-        `https://github.com/login/oauth/authorize?client_id=${
-          process.env.REACT_APP_CLIENT_ID
-        }&scope=gist`,
+        `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=gist`,
         'popup',
         'width=600,height=700'
       )
@@ -359,9 +357,7 @@ class Menu extends Component {
 
         // and log in.
         window.open(
-          `https://github.com/login/oauth/authorize?client_id=${
-            process.env.REACT_APP_CLIENT_ID
-          }&scope=gist`,
+          `https://github.com/login/oauth/authorize?client_id=${process.env.REACT_APP_CLIENT_ID}&scope=gist`,
           'popup',
           'width=600,height=700'
         )
@@ -448,9 +444,8 @@ class Menu extends Component {
     const currentLogin = _.get(token, 'user.login', null)
 
     // INSERT BLANK can only be enabled when:
-    // - the gist is not empty
-    // - OR content is not NEW_GAME template
-    const enableInsertBlank = !_.isEmpty(gist) || !blank
+    // - the content is not NEW_GAME template
+    const enableInsertBlank = !blank
 
     const enableRecord = canRecord(this.props)
 
@@ -458,6 +453,12 @@ class Menu extends Component {
     // - gist is NOT empty AND
     //    - gist is not ours (anonymous or user that is not us)
     //    - OR there is something to save (content is non-null)
+
+    // TODO: now that we're trying to use a non-empty string as a
+    // blank cassette, which means we're loading the initialState
+    // {gist} object, well, the { gist } is not empty anymore.
+    // So... that throws this off. As it stands, we can fork a
+    // non-existing gist.
     const enableRecordToBlank =
       !_.isEmpty(gist) &&
       (gistLogin === null || gistLogin !== currentLogin || !contentIsEmpty)
