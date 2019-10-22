@@ -10,7 +10,18 @@ const initialState = {
   screen: screenTypes.BOOT,
   // screen: screenTypes.HOME,
   booted: false,
-  gist: {},
+  gist: {
+    data: {
+      files: {
+        'code.js': {
+          content: blank
+        },
+        'misc.json': {
+          content: `{"iframeVersion": "${version}"}`
+        }
+      }
+    }
+  },
   game: {
     0: {
       text: blank,
